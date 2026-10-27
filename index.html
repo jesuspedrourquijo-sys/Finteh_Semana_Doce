@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador: Navegando el futuro de Fintechia</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-orange: #fb923c;
+            --accent-purple: #c084fc;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 25px;
+        }
+
+        .header-container {
+            max-width: 1450px;
+            margin: 0 auto 25px auto;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e293b 100%);
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .header-container h1 {
+            margin: 0; font-size: 30px; font-weight: 800; color: #fff;
+            display: flex; align-items: center; gap: 16px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .header-container h1 span {
+            background: linear-gradient(90deg, #fff 40%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-container p {
+            margin: 0; color: var(--text-muted); font-size: 13.5px; font-weight: 500;
+            letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+        }
+
+        .header-container p strong { color: var(--accent-blue); }
+
+        .container { 
+            max-width: 1450px; 
+            margin: 0 auto; 
+            display: flex; 
+            gap: 25px; 
+        }
+
+        .sidebar { 
+            width: 470px; 
+            background: var(--bg-card); 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            height: fit-content;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .main-panel { 
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        h2 { 
+            color: #fff; font-size: 15px; margin-top: 0; margin-bottom: 20px; 
+            text-transform: uppercase; letter-spacing: 1px;
+            border-left: 4px solid var(--accent-blue); padding-left: 10px;
+        }
+
+        .auth-box {
+            background: rgba(56, 189, 248, 0.03);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 22px;
+        }
+
+        .auth-box label {
+            margin-bottom: 6px;
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .auth-box input[type="text"] {
+            margin-bottom: 12px;
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background-color: var(--bg-input);
+            color: #fff;
+            font-size: 12.5px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .auth-box input[type="text"]:last-child { margin-bottom: 0; }
+        .auth-box input[type="text"]:disabled { opacity: 0.7; cursor: not-allowed; background-color: #1e293b; }
+
+        .info-box { 
+            background: rgba(56, 189, 248, 0.05); 
+            border: 1px solid rgba(56, 189, 248, 0.2); 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 22px; 
+            font-size: 12px; 
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .control-group { 
+            margin-bottom: 20px; 
+            background: rgba(255,255,255,0.02); 
+            padding: 14px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+        }
+
+        label { 
+            display: block; font-weight: 600; margin-bottom: 8px; 
+            font-size: 11.5px; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 0.5px; 
+        }
+
+        select { 
+            width: 100%; padding: 10px 12px; border-radius: 8px; 
+            border: 1px solid rgba(255,255,255,0.1); background-color: var(--bg-input); 
+            color: #fff; font-size: 12.5px; outline: none; cursor: pointer; transition: border 0.2s;
+            box-sizing: border-box;
+        }
+
+        select:focus { border-color: var(--accent-blue); }
+        select:disabled { opacity: 0.7; cursor: not-allowed; background-color: #1e293b; }
+        input[type="range"] { width: 100%; accent-color: var(--accent-blue); margin-top: 8px; cursor: pointer; }
+        input[type="range"]:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .guia-box {
+            font-size: 11px;
+            color: #cbd5e1;
+            margin-top: 8px;
+            line-height: 1.45;
+            background: rgba(0,0,0,0.25);
+            padding: 9px 11px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .btn-enviar {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white; font-weight: 700; font-size: 14px; text-transform: uppercase;
+            padding: 14px; width: 100%; border: none; border-radius: 10px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); transition: background 0.2s, transform 0.1s;
+            letter-spacing: 0.5px; margin-top: 10px;
+        }
+        .btn-enviar:hover { background: linear-gradient(135deg, #0369a1 100%, #075985 100%); }
+        .btn-enviar:active { transform: scale(0.98); }
+        .btn-enviar:disabled { background: #475569; cursor: not-allowed; box-shadow: none; opacity: 0.6; }
+
+        .metrics-grid { 
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; 
+        }
+
+        .metric-card { 
+            background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); 
+            padding: 16px 10px; border-radius: 14px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .metric-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .metric-value { font-size: 22px; font-weight: 700; color: #fff; margin: 6px 0; }
+        .metric-delta { font-size: 10.5px; font-weight: 600; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 20px; display: inline-block; }
+        
+        .delta-up { color: var(--accent-red); background: rgba(248, 113, 113, 0.1); }
+        .delta-down { color: var(--accent-green); background: rgba(74, 222, 128, 0.1); }
+        .delta-neutral { color: var(--text-muted); }
+
+        .social-impact-box { 
+            border-radius: 24px; padding: 30px 25px; text-align: center; transition: all 0.3s ease; 
+            border: 2px solid rgba(255,255,255,0.05); box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        
+        .social-emoji { 
+            font-size: 80px; margin-bottom: 12px; line-height: 1; 
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); 
+            animation: pulse 3s infinite ease-in-out; user-select: none; 
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .social-status { font-size: 22px; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .social-desc { font-size: 14px; max-width: 900px; margin: 0 auto; line-height: 1.6; color: #e2e8f0; }
+        
+        .status-dead { background: linear-gradient(135deg, #451a1a 0%, #1a0808 100%); border-color: var(--accent-red); color: #fca5a5; }
+        .status-angry { background: linear-gradient(135deg, #43250e 0%, #1c0f06 100%); border-color: var(--accent-orange); color: #fed7aa; }
+        .status-neutral { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color: var(--text-muted); color: #fff; }
+        .status-happy { background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); border-color: var(--accent-green); color: #bbf7d0; }
+
+        .analysis-extension-box {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.65;
+            color: #cbd5e1;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .analysis-extension-box h4 {
+            margin: 0 0 10px 0;
+            color: var(--accent-blue);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .panel-alertas { background: rgba(248, 113, 113, 0.02); border: 1px solid rgba(248, 113, 113, 0.15); padding: 22px; border-radius: 14px; }
+        .panel-logros { background: rgba(74, 222, 128, 0.02); border: 1px solid rgba(74, 222, 128, 0.15); padding: 22px; border-radius: 14px; }
+        
+        .panel-alertas h3 { color: var(--accent-red); margin-top: 0; font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .panel-logros h3 { color: var(--accent-green); margin-top: 0; font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        ul { padding-left: 18px; margin: 0; font-size: 12.5px; line-height: 1.6; color: #cbd5e1; }
+        li { margin-bottom: 10px; }
+        .value-display { font-size: 11px; color: var(--accent-blue); font-weight: 700; float: right; background: rgba(56, 189, 248, 0.15); padding: 2px 8px; border-radius: 4px; }
+
+        .panel-aprendizaje { 
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.06) 0%, rgba(56, 189, 248, 0.06) 100%); 
+            border: 1px solid rgba(192, 132, 252, 0.3); 
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        .panel-aprendizaje h3 { color: var(--accent-purple); margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.8px; }
+        
+        .target-box {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 4px solid var(--accent-purple);
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            color: #f1f5f9;
+            line-height: 1.65;
+            margin-top: 10px;
+        }
+
+        .target-box p { margin: 0 0 10px 0; }
+        .target-box p:last-child { margin-bottom: 0; }
+
+        .fb-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 14px;
+        }
+        .fb-card h4 { margin: 0 0 8px 0; font-size: 13px; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.5px; }
+        .fb-card p { margin: 0; font-size: 12.5px; line-height: 1.65; color: #cbd5e1; }
+
+        .rubrica-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
+        .rubrica-table th, .rubrica-table td { padding: 10px 12px; border: 1px solid rgba(255,255,255,0.08); text-align: left; vertical-align: top; }
+        .rubrica-table th { background: rgba(192, 132, 252, 0.15); color: var(--accent-purple); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .rubrica-table td { color: #cbd5e1; line-height: 1.4; }
+        .rubrica-table .crit-title { font-weight: 700; color: var(--accent-blue); }
+
+        .rubrica-table .pts-badge {
+            display: inline-block; background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);
+            padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 11px; margin-bottom: 4px;
+        }
+
+        .grado-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .grado-excelente { background: rgba(74, 222, 128, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .grado-suficiente { background: rgba(251, 146, 60, 0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
+        .grado-insuficiente { background: rgba(248, 113, 113, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        .final-score-box {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(192, 132, 252, 0.1) 100%);
+            border: 2px solid var(--accent-blue); padding: 22px; border-radius: 16px; text-align: center; margin-top: 20px;
+        }
+        .final-score-num { font-size: 44px; font-weight: 900; color: #fff; }
+        .final-score-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div class="header-container">
+    <h1>📈 <span>Simulador: Navegando el futuro de Fintechia</span></h1>
+    <p>Materia: <strong>Fintech: Del dinero físico al virtual</strong> | Evaluación de Situación Problema</p>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>👤 Datos del Alumno</h2>
+        <div class="auth-box">
+            <label for="input-nombre"><b>Nombre Completo:</b></label>
+            <input type="text" id="input-nombre" placeholder="Ej. Ana María López">
+            
+            <label for="input-codigo"><b>Matrícula / Código:</b></label>
+            <input type="text" id="input-codigo" placeholder="Ej. A01234567">
+        </div>
+
+        <h2>📋 Contexto Estructural y Crisis de Fintechia</h2>
+        <div class="info-box">
+            <b>🌐 Radiografía Económica del País:</b><br>
+            • Población total: <b>10 millones de habitantes</b><br>
+            • PIB Nominal: <b>$50,000 Mdd</b> ($5,000 per cápita)<br>
+            • Presupuesto Público Anual: <b>$10,000 Mdd</b> (20% del PIB)<br>
+            • Recaudación Tributaria Actual: <b>$7,500 Mdd</b> (15% del PIB)<br>
+            • Déficit Fiscal Inicial: <b>-$2,500 Mdd</b> (Cubierto con Deuda)<br>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;">
+            <b>🔴 Situación Base de Crisis Actual:</b><br>
+            • Inflación: <b>8.0%</b> | Desempleo: <b>7.0%</b><br>
+            • Crecimiento PIB: <b>1.5%</b> | Deuda / PIB: <b>60.0%</b><br>
+            • Adopción Fintech: <b>10.0%</b><br>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;">
+            <b>🎯 Parámetros Objetivo (Metas del Modelo):</b><br>
+            • Inflación deseada: <b>&le; 4.0%</b> (Meta central: 3.0%)<br>
+            • Desempleo deseado: <b>&le; 5.0%</b><br>
+            • Crecimiento PIB deseado: <b>&ge; 3.0%</b><br>
+            • Deuda / PIB deseada: <b>&le; 58.0%</b><br>
+            • Adopción Fintech deseada: <b>&ge; 35.0%</b>
+        </div>
+
+        <h2>🏛️ 1. Bloque Monetario y Normativo</h2>
+        <div class="control-group">
+            <label>📉 Tasa de Interés Operativa (Banco Central)</label>
+            <select id="politica-monetaria" onchange="evaluarEstado()">
+                <option value="vacio" selected>-- Selecciona una respuesta --</option>
+                <option value="baja_agresiva">Baja Expansiva Extrema (3.0%)</option>
+                <option value="baja_moderada">Baja Moderada (5.0%)</option>
+                <option value="mantener">Mantener Tasa Actual (6.5%)</option>
+                <option value="subida_moderada">Subida Contractiva Moderada (8.5%)</option>
+                <option value="subida_agresiva">Subida de Choque Anti-Inflación (11.0%)</option>
+            </select>
+            <div class="guia-box">
+                <b>💡 Contexto Macroeconómico & Transmisión Monetaria:</b><br>
+                • <i>Dilema:</i> ¿Deberían anclar fuertemente las expectativas de inflación encareciendo el crédito corporativo y arriesgando el crecimiento, o relajar las tasas para abaratar la inversión asumiendo el riesgo de acelerar los precios?
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>⚖️ Arquitectura Regulatoria Fintech</label>
+            <select id="regulacion-fintech" onchange="evaluarEstado()">
+                <option value="vacio" selected>-- Selecciona una respuesta --</option>
+                <option value="flexible">Laissez-faire / Sandbox abierta desregulada</option>
+                <option value="progresivo">Licenciamiento por capas de riesgo operativo</option>
+                <option value="moderado">Supervisión estándar y cumplimiento básico</option>
+                <option value="prudencial">Marco macroprudencial estricto con reporte continuo</option>
+                <option value="estricto">Fiscalización dura y encaje patrimonial bancario tradicional</option>
+            </select>
+            <div class="guia-box">
+                <b>💡 Contexto Macroeconómico & Dilema Normativo:</b><br>
+                • <i>Dilema:</i> ¿Cómo equilibrar la reducción de barreras de entrada para incentivar la competencia e inversión tecnológica sin generar vulnerabilidades de riesgo moral o falta de protección al ahorrador?
+            </div>
+        </div>
+
+        <h2>💸 2. Bloque Fiscal Impositivo</h2>
+        <div class="control-group">
+            <label>🏛️ Gasto Corriente y Presupuesto Público</label>
+            <select id="gasto-fiscal" onchange="evaluarEstado()">
+                <option value="vacio" selected>-- Selecciona una respuesta --</option>
+                <option value="austeridad">Austeridad Rígida / Ajuste Fiscal Primario</option>
+                <option value="mantener">Presupuesto Inercial Continuo</option>
+                <option value="estimulo_infraestructura">Inversión en Infraestructura Digital y Redes</option>
+                <option value="estimulo_social">Transferencias Directas de Liquidez a Familias</option>
+                <option value="estimulo_mixto">Fondo Mixto de Coinversión en I+D+i Fintech</option>
+            </select>
+            <div class="guia-box">
+                <b>💡 Contexto Macroeconómico & Dilema del Gasto Público:</b><br>
+                • <i>Dilema:</i> ¿Priorizar la contención del déficit presupuestal para no elevar la deuda soberana, o expandir el gasto público buscando activar la producción privada a costa de una mayor presión fiscal?
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>📊 Impuestos Corporativos y de Consumo</label>
+            <select id="impuestos-generales" onchange="evaluarEstado()">
+                <option value="vacio" selected>-- Selecciona una respuesta --</option>
+                <option value="reducir_agresivo">Reducción Impositiva Expansiva Agresiva (-5%)</option>
+                <option value="reducir_selectivo">Incentivos Fiscales Selectivos a Reinversión</option>
+                <option value="mantener">Mantener Tasas Vigentes (Neutralidad)</option>
+                <option value="aumentar_moderado">Aumento Moderado Recaudatorio (+2%)</option>
+                <option value="aumentar_estructural">Aumento Estructural de Carga y Fiscalización (+5%)</option>
+            </select>
+            <div class="guia-box">
+                <b>💡 Contexto Macroeconómico & Dilema Impositivo:</b><br>
+                • <i>Dilema:</i> ¿Aliviar los costos fijos corporativos para impulsar la contratación formal arriesgando los ingresos del Estado, o elevar la recaudación fiscal inmediata arriesgando incentivar la economía informal?
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>📱 Gravamen a Transacciones Digitales</label>
+            <select id="impuestos-digitales" onchange="evaluarEstado()">
+                <option value="vacio" selected>-- Selecciona una respuesta --</option>
+                <option value="exento">Incentivo Total: Tasa 0% a operaciones virtuales</option>
+                <option value="exento_temporal">Tasa 0% condicionada a formalización minorista</option>
+                <option value="moderado">Retención estándar transaccional de control</option>
+                <option value="progresivo">Esquema progresivo según volumen operativo</option>
+                <option value="alto">Impuesto punitivo a activos y pasarelas tech</option>
+            </select>
+            <div class="guia-box">
+                <b>💡 Contexto Macroeconómico & Sustitución de Medios de Pago:</b><br>
+                • <i>Dilema:</i> ¿Renunciar a la recaudación en pagos digitales para promover la trazabilidad financiera del comercio, o aplicar retenciones tributarias a las pasarelas arriesgando un retorno masivo al dinero en efectivo?
+            </div>
+        </div>
+
+        <h2>🔒 3. Infraestructura y Moneda</h2>
+        <div class="control-group">
+            <label>🛡️ Fondo de Ciberdefensa <span id="ciber-val" class="value-display">50 Mdd</span></label>
+            <input type="range" id="ciber-presupuesto" min="0" max="600" step="50" value="50" oninput="evaluarEstado()">
+            
+            <div id="ciber-guia" style="font-size: 11px; color: #cbd5e1; margin-top: 8px; line-height: 1.45; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                <div style="font-weight: 700; color: var(--accent-blue); margin-bottom: 4px; font-size: 10.5px; text-transform: uppercase;">📊 Referencia de Escala:</div>
+                • PIB Nominal de Fintechia: <b>$50,000 Mdd</b> | Presupuesto Estatal: <b>$10,000 Mdd</b><br>
+                <div id="ciber-dilema-text" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); font-style: italic; color: var(--text-muted);">
+                    Selecciona un monto para evaluar el costo de oportunidad.
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>🪙 Digitalización Soberana del Dinero</label>
+            <select id="dinero-digital" onchange="evaluarEstado()">
+                <option value="vacio" selected>-- Selecciona una respuesta --</option>
+                <option value="efectivo">Conservar Dinero Físico Dominante (Status Quo)</option>
+                <option value="hibrido">Modelo Híbrido: Efectivo + Coexistencia Digital</option>
+                <option value="billeteras">Apalancar Ecosistema de Billeteras Privadas</option>
+                <option value="cbdc_piloto">Despliegue Progresivo de CBDC (Piloto)</option>
+                <option value="cbdc">Despliegue Total Obligatorio de CBDC (Soberano)</option>
+            </select>
+            <div class="guia-box">
+                <b>💡 Contexto Macroeconómico & Arquitectura Monetaria:</b><br>
+                • <i>Dilema:</i> ¿Mantener la dominancia del efectivo físico asumiendo sus costos de logística y opacidad, o migrar hacia una moneda digital de banco central arriesgando la desintermediación del sistema bancario y posibles ciberataques?
+            </div>
+        </div>
+
+        <button type="button" id="btn-enviar" class="btn-enviar" onclick="bloquearYEvaluar()">Enviar Respuestas y Calificar</button>
+    </div>
+
+    <div class="main-panel">
+        <h2>🎭 Resultado del Escenario Macroeconómico</h2>
+        <div id="social-impact-container" class="social-impact-box status-neutral">
+            <div id="social-emoji" class="social-emoji">😐</div>
+            <div id="social-status" class="social-status">Esperando Selección de Estrategia</div>
+            <div id="social-desc" class="social-desc">Selecciona las respuestas en los controles del panel izquierdo y haz clic en "Enviar Respuestas y Calificar" para simular el impacto.</div>
+        </div>
+
+        <div id="analysis-extension" class="analysis-extension-box">
+            <h4>🔎 Análisis Técnico Extendido del Resultado Escenario</h4>
+            <div id="analysis-extension-text">Completa la selección de políticas para desplegar la evaluación estructural del equilibrio macroeconómico.</div>
+        </div>
+
+        <h2>📊 Indicadores Macroeconómicos y Cumplimiento de Metas</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">🛑 Inflación</div>
+                <div class="metric-value" id="m-inf">--</div>
+                <div class="metric-delta delta-neutral" id="d-inf">Base 8.0%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">💼 Desempleo</div>
+                <div class="metric-value" id="m-des">--</div>
+                <div class="metric-delta delta-neutral" id="d-des">Base 7.0%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">📈 PIB Real</div>
+                <div class="metric-value" id="m-pib">--</div>
+                <div class="metric-delta delta-neutral" id="d-pib">Base 1.5%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">🏛️ Deuda / PIB</div>
+                <div class="metric-value" id="m-deuda">--</div>
+                <div class="metric-delta delta-neutral" id="d-deuda">Base 60.0%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">📱 Adopción</div>
+                <div class="metric-value" id="m-dig">--</div>
+                <div class="metric-delta delta-neutral" id="d-dig">Base 10.0%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">🎯 Nota Metas</div>
+                <div class="metric-value" id="m-metas">--</div>
+                <div class="metric-delta delta-neutral" id="d-metas">0 / 100 Pts</div>
+            </div>
+        </div>
+
+        <div class="results-grid">
+            <div class="panel-alertas">
+                <h3>⚠️ Alertas Operativas e Impactos Negativos Ampliados</h3>
+                <ul id="alertas-lista"><li>Selecciona todas las políticas para calcular alertas.</li></ul>
+            </div>
+            <div class="panel-logros">
+                <h3>✅ Impactos Positivos y Logros Estructurales Ampliados</h3>
+                <ul id="logros-lista"><li>Selecciona todas las políticas para calcular logros.</li></ul>
+            </div>
+        </div>
+
+        <!-- RETROALIMENTACIÓN FORMATIVA Y CUMPLIMIENTO DE FINES DE APRENDIZAJE TEXTUALES -->
+        <div class="panel-aprendizaje">
+            <h3>💬 Diagnóstico Cualitativo y Retroalimentación Formativa</h3>
+            <div class="target-box">
+                <b>Fines de Aprendizaje del Curso:</b>
+                <p><b>1)</b> <i>Evaluar de manera crítica las fuentes de información disponibles y, a partir de ello, interpretar los datos utilizando parámetros y procedimientos pertinentes al contexto, garantizando así el uso informado y contextualizado de la evidencia para la toma de decisiones o la comprensión de situaciones compleja.</i></p>
+                <p><b>2)</b> <i>Vincular los problemas sociales con conceptos y teorías de ciencias sociales. considerando las diferencias principales entre dinero fiduciario y criptoactivos, así como las diversas opciones que tienen los entes económicos para realizar pagos o financiamiento alternativo bajo el marco normativo que guía decisiones financieras individuales, empresariales, sociales y gubernamentales.</i></p>
+            </div>
+            <div id="retroalimentacion-cuerpo">
+                <p style="font-size: 13px; color: #cbd5e1; margin-top: 10px;">Envía tu combinación de políticas para generar el diagnóstico cualitativo personalizado.</p>
+            </div>
+        </div>
+
+        <!-- MÓDULO DE RÚBRICA OFICIAL Y CALIFICACIÓN FINAL INTEGRANDO CUMPLIMIENTO DE METAS -->
+        <div class="panel-aprendizaje">
+            <h3>📋 Dictamen Oficial de Evaluación e Integración de Metas Macroeconómicas (100 Puntos)</h3>
+
+            <table class="rubrica-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Criterio / Ponderación</th>
+                        <th style="width: 50%;">Nivel de Desempeño y Evidencia Demostrada</th>
+                        <th style="width: 25%;">Grado Asignado</th>
+                    </tr>
+                </thead>
+                <tbody id="rubrica-body">
+                    <tr>
+                        <td class="crit-title">1. Diagnóstico Macroeconómico e Impacto Social<br><span class="pts-badge">20 Puntos</span></td>
+                        <td>Envía la simulación para calcular el desempeño.</td>
+                        <td><span class="grado-badge grado-insuficiente">Pendiente</span></td>
+                    </tr>
+                    <tr>
+                        <td class="crit-title">2. Diseño y Coordinación de Políticas<br><span class="pts-badge">25 Puntos</span></td>
+                        <td>Envía la simulación para calcular el desempeño.</td>
+                        <td><span class="grado-badge grado-insuficiente">Pendiente</span></td>
+                    </tr>
+                    <tr>
+                        <td class="crit-title">3. Estrategia Fintech y Cultura Digital<br><span class="pts-badge">25 Puntos</span></td>
+                        <td>Envía la simulación para calcular el desempeño.</td>
+                        <td><span class="grado-badge grado-insuficiente">Pendiente</span></td>
+                    </tr>
+                    <tr>
+                        <td class="crit-title">4. Cumplimiento de Metas Macroeconómicas (5 Indicadores)<br><span class="pts-badge">10 Puntos</span></td>
+                        <td>Envía la simulación para calcular el desempeño.</td>
+                        <td><span class="grado-badge grado-insuficiente">Pendiente</span></td>
+                    </tr>
+                    <tr>
+                        <td class="crit-title">5. Estructura y Formato del Informe Escrito<br><span class="pts-badge">10 Puntos</span></td>
+                        <td>Envía la simulación para calcular el desempeño.</td>
+                        <td><span class="grado-badge grado-excelente">Excelente (10/10 pts)</span></td>
+                    </tr>
+                    <tr>
+                        <td class="crit-title">6. Presentación Oral y Trabajo en Equipo<br><span class="pts-badge">10 Puntos</span></td>
+                        <td>Envía la simulación para calcular el desempeño.</td>
+                        <td><span class="grado-badge grado-excelente">Excelente (10/10 pts)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="final-score-box">
+                <div class="final-score-lbl">Calificación Final Global Recomendada</div>
+                <div class="final-score-num" id="final-score-display">0 / 100</div>
+                <div style="font-size: 12px; color: var(--accent-blue); margin-top: 4px;" id="final-score-status">Esperando envío de respuestas...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let simulacionEnviada = false;
+
+function evaluarEstado() {
+    let ciber = parseInt(document.getElementById('ciber-presupuesto').value);
+    document.getElementById('ciber-val').innerText = ciber + ' Mdd';
+
+    let pctPib = (ciber / 50000 * 100).toFixed(2);
+    let pctPresupuesto = (ciber / 10000 * 100).toFixed(1);
+    let dilemaText = "";
+
+    if (ciber <= 100) {
+        dilemaText = `⚖️ <b>Asignación: $${ciber} Mdd (${pctPib}% del PIB / ${pctPresupuesto}% del Presupuesto Estatal).</b><br>
+        • <i>Efecto Fiscal:</i> Minimiza el gasto primario y evita presionar la Deuda Soberana.<br>
+        • <i>Dilema:</i> ¿Es suficiente para proteger pasarelas de pago frente a ciberataques si deciden acelerar la inclusión digital?`;
+    } else if (ciber <= 250) {
+        dilemaText = `⚖️ <b>Asignación: $${ciber} Mdd (${pctPib}% del PIB / ${pctPresupuesto}% del Presupuesto Estatal).</b><br>
+        • <i>Efecto Fiscal:</i> Representa una partida moderada sobre el déficit fiscal del Estado.<br>
+        • <i>Dilema:</i> Equilibra la supervisión estándar bancaria, pero exige evaluar si resistiría la arquitectura de un sistema Monetario Soberano Digital.`;
+    } else if (ciber <= 450) {
+        dilemaText = `⚖️ <b>Asignación: $${ciber} Mdd (${pctPib}% del PIB / ${pctPresupuesto}% del Presupuesto Estatal).</b><br>
+        • <i>Efecto Fiscal:</i> Implica destinar cerca del 3%-4% de la recaudación tributaria total a defensa digital.<br>
+        • <i>Dilema:</i> Ofrece capacidad para soportar redes de alta transaccionalidad, a costa de restarle flexibilidad al presupuesto público.`;
+    } else {
+        dilemaText = `⚖️ <b>Asignación: $${ciber} Mdd (${pctPib}% del PIB / ${pctPresupuesto}% del Presupuesto Estatal).</b><br>
+        • <i>Efecto Fiscal:</i> Inversión pesada que representa más del 5% del presupuesto público anual.<br>
+        • <i>Dilema:</i> Brinda blindaje defensivo máximo, pero su financiamiento obligará a emitir mayor deuda o comprometer otros gastos de capital.`;
+    }
+    
+    document.getElementById('ciber-dilema-text').innerHTML = dilemaText;
+
+    if (!simulacionEnviada) {
+        let mon = document.getElementById('politica-monetaria').value;
+        let reg = document.getElementById('regulacion-fintech').value;
+        let gasto = document.getElementById('gasto-fiscal').value;
+        let impGen = document.getElementById('impuestos-generales').value;
+        let impDig = document.getElementById('impuestos-digitales').value;
+        let dinero = document.getElementById('dinero-digital').value;
+
+        let pend = [mon, reg, gasto, impGen, impDig, dinero].filter(v => v === "vacio").length;
+        if (pend > 0) {
+            document.getElementById('social-impact-container').className = "social-impact-box status-neutral";
+            document.getElementById('social-emoji').innerText = "😐";
+            document.getElementById('social-status').innerText = "Selección Incompleta (" + pend + " pendientes)";
+            document.getElementById('social-desc').innerText = "Por favor selecciona una opción en todos los desplegables para habilitar la simulación y dictamen.";
+            document.getElementById('analysis-extension-text').innerText = "Completa la selección de políticas para desplegar la evaluación estructural del equilibrio macroeconómico.";
+        }
+    }
+}
+
+function bloquearYEvaluar() {
+    let nombre = document.getElementById('input-nombre').value.trim();
+    let codigo = document.getElementById('input-codigo').value.trim();
+
+    if (nombre === "" || codigo === "") {
+        alert("⚠️ Por favor ingresa tu Nombre Completo y tu Matrícula/Código antes de enviar.");
+        return;
+    }
+
+    let mon = document.getElementById('politica-monetaria').value;
+    let reg = document.getElementById('regulacion-fintech').value;
+    let gasto = document.getElementById('gasto-fiscal').value;
+    let impGen = document.getElementById('impuestos-generales').value;
+    let impDig = document.getElementById('impuestos-digitales').value;
+    let ciber = parseInt(document.getElementById('ciber-presupuesto').value);
+    let dinero = document.getElementById('dinero-digital').value;
+
+    let selects = [
+        document.getElementById('politica-monetaria'),
+        document.getElementById('regulacion-fintech'),
+        document.getElementById('gasto-fiscal'),
+        document.getElementById('impuestos-generales'),
+        document.getElementById('impuestos-digitales'),
+        document.getElementById('dinero-digital')
+    ];
+
+    let vacios = selects.filter(s => s.value === "vacio").length;
+
+    if (vacios > 0) {
+        alert("⚠️ Faltan " + vacios + " decisiones por seleccionar. Completa todas las opciones antes de enviar.");
+        return;
+    }
+
+    if (!confirm("¿Estás seguro de enviar tu combinación de políticas, " + nombre + "? Una vez enviada, la simulación quedará bloqueada.")) {
+        return;
+    }
+
+    // Bloqueo de UI
+    simulacionEnviada = true;
+    document.getElementById('input-nombre').disabled = true;
+    document.getElementById('input-codigo').disabled = true;
+    selects.forEach(s => s.disabled = true);
+    document.getElementById('ciber-presupuesto').disabled = true;
+    let btn = document.getElementById('btn-enviar');
+    btn.disabled = true;
+    btn.innerText = "Simulación Evaluada y Bloqueada";
+
+    // CÁLCULOS MACROECONÓMICOS
+    let inf = 8.0; let des = 7.0; let pib = 1.5; let deuda = 60.0; let dig = 10.0;
+    let alertas = []; let logros = [];
+
+    // Impacto progresivo del presupuesto de Ciberdefensa en la Deuda Pública
+    deuda += (ciber / 50000) * 100;
+
+    // 1. MONETARIO
+    if (mon === "subida_moderada") { 
+        inf -= 1.6; pib -= 0.2; des += 0.3; 
+        logros.push("Anclaje Moderado de Expectativas: La subida al 8.5% redujo paulatinamente la liquidez especulativa sin asfixiar las líneas de crédito operativo comercial."); 
+    }
+    else if (mon === "subida_agresiva") { 
+        inf -= 4.5; pib -= 4.4; des += 5.2; deuda -= 7.0; 
+        alertas.push("Crisis de Iliquidez y Quiebra PYME: La tasa de choque del 11.0% paralizó la concesión de crédito productivo, provocando la destrucción masiva de puestos de trabajo y una profunda contracción de la demanda agregada."); 
+    }
+    else if (mon === "baja_moderada") { 
+        inf += 2.0; pib += 0.5; des -= 0.4; 
+        alertas.push("Presión de Demanda sobre Precios: La reducción monetaria estimuló el consumo de corto plazo, pero al no aumentar la capacidad productiva instalada, recalentó la inflación subyacente."); 
+    }
+    else if (mon === "baja_agresiva") { 
+        inf += 5.5; pib += 1.0; des -= 0.6; deuda += 3.0; 
+        alertas.push("Burbuja Inflacionaria e Impuesto Regresivo: La tasa del 3.0% generó un exceso de masa monetaria no respaldada por bienes reales, actuando como un impuesto regresivo que devoró el poder adquisitivo de los asalariados."); 
+    }
+
+    // 2. REGULACIÓN
+    if (reg === "flexible") { 
+        dig += 14.0; pib += 0.6; 
+        logros.push("Ecosistema de Innovación Sandbox: La flexibilización regulatoria redujo las barreras de entrada para startups fintech, atrayendo capital emprendedor e incrementando la competencia financiera."); 
+    }
+    else if (reg === "progresivo") {
+        dig += 10.0; pib += 0.4;
+        logros.push("Licenciamiento por Capas: Flexibilidad operativa para startups iniciales con exigencias graduales a medida que escala su saldo custodiado.");
+    }
+    else if (reg === "moderado") {
+        dig += 6.0; pib += 0.2;
+        logros.push("Supervisión Estándar: Balance neutro entre requerimientos de reporte y libertad operativa.");
+    }
+    else if (reg === "prudencial") {
+        dig += 2.0; pib -= 0.1;
+        logros.push("Marco Macroprudencial: Blindaje contra riesgo sistémico pero con mayor carga administrativa sobre pasarelas.");
+    }
+    else if (reg === "estricto") { 
+        dig -= 10.0; pib -= 0.5; des += 0.8; 
+        alertas.push("Estrangulamiento y Fuga Fintech: El sobreencaje de capital y los requerimientos rígidos asfixiaron la rentabilidad de las empresas tecnológicas, provocando la fuga de startups hacia mercados vecinos más ágiles."); 
+    }
+
+    // 3. FISCAL - GASTO
+    if (gasto === "austeridad") { 
+        deuda -= 4.0; pib -= 0.8; des += 1.2; inf -= 0.4; 
+        alertas.push("Contracción del Gasto Público Primario: El recorte presupuestal redujo las contrataciones estatales y paralizó obras públicas, induciendo una ola de despidos indirectos en el sector privado."); 
+    }
+    else if (gasto === "estimulo_infraestructura") { 
+        pib += 1.3; deuda += 2.5; des -= 1.1; 
+        logros.push("Multiplicador de Infraestructura: La inversión pública directa en conectividad de red, nodos de datos y telecomunicaciones elevó la productividad marginal del sector privado."); 
+    }
+    else if (gasto === "estimulo_social") { 
+        deuda += 4.5; inf += 1.5; des -= 0.4; 
+        alertas.push("Déficit Fiscal y Recalentamiento del Consumo: La inyección masiva de transferencias sin contrapartida productiva expandió el endeudamiento soberano e intensificó la presión sobre el nivel general de precios."); 
+    }
+    else if (gasto === "estimulo_mixto") {
+        pib += 1.0; deuda += 2.0; dig += 6.0;
+        logros.push("Coinversión en I+D+i: Apalancamiento mixto público-privado que dinamiza la transferencia tecnológica sin desbordar el gasto corriente.");
+    }
+
+    // 3. FISCAL - IMPUESTOS GENERALES
+    if (impGen === "reducir_agresivo") { 
+        pib += 1.0; deuda += 5.0; 
+        logros.push("Estímulo Agresivo a la Inversión: La fuerte rebaja impositiva alivió costos fijos corporativos, aunque expandió sustancialmente la brecha de deuda soberana."); 
+    }
+    else if (impGen === "reducir_selectivo") {
+        pib += 0.6; deuda += 2.0; dig += 4.0;
+        logros.push("Incentivo a Reinversión Tecnológica: La exención a compra de equipos y redes impulsó la modernización corporativa.");
+    }
+    else if (impGen === "aumentar_moderado") {
+        deuda -= 2.0; pib -= 0.3;
+        alertas.push("Ajuste Tributario Moderado: Aumentó la recaudación fiscal primaria a costa de un leve enfriamiento en la inversión de capital.");
+    }
+    else if (impGen === "aumentar_estructural") { 
+        deuda -= 4.5; pib -= 1.0; des += 1.1; 
+        alertas.push("Incentivo a la Economía Informal y Evasión: La mayor carga fiscal redujo los márgenes operativos de las empresas, incentivando el salto a la informalidad y la subdeclaración tributaria."); 
+    }
+
+    // 3. FISCAL - IMPUESTOS DIGITALES
+    if (impDig === "exento") { 
+        dig += 12.0; 
+        logros.push("Democratización e Inclusión Financiera Digital: La tasa 0% en transacciones virtuales eliminó la fricción impositiva, incentivando a pequeños comerciantes a sustituir el efectivo por cobros con código QR."); 
+    }
+    else if (impDig === "exento_temporal") {
+        dig += 8.0; pib += 0.2;
+        logros.push("Formalización Gradual Digital: El esquema temporal incentivó a comercios informales a registrarse antes de la llegada de la tarifa estándar.");
+    }
+    else if (impDig === "progresivo") {
+        dig += 3.0; deuda -= 1.0;
+        logros.push("Recaudación Progresiva Tech: Captura de rentas en grandes pasarelas sin sofocar a micro-startups emergentes.");
+    }
+    else if (impDig === "alto") { 
+        dig -= 8.0; pib -= 0.3; 
+        alertas.push("Retorno al Efectivo Informal: La gravación punitiva a pasarelas digitales obligó a comercios y microempresas a desbancarizarse y retornar a transacciones físicas en efectivo no trazables."); 
+    }
+
+    // 4. CIBERSEGURIDAD Y MONEDA
+    if (ciber >= 300) { 
+        dig += (ciber / 100) * 4.0; 
+        logros.push("Blindaje Ciberdefensivo de Grado Bancario: La dotación presupuestal protegió la infraestructura crítica nacional contra ciberataques, mitigando el riesgo de fraude operativo e identidad."); 
+    }
+    else if (ciber <= 50) { 
+        alertas.push("Vulnerabilidad Informática Sistémica: La desprotección presupuestal de los servidores financieros expone los fondos de usuarios a ataques ransomware y filtración masiva de credenciales."); 
+    }
+
+    if (dinero === "hibrido") {
+        dig += 8.0; pib += 0.3;
+        logros.push("Transición Monetaria Ordenada: Mantenimiento de la inclusión en efectivo junto con la expansión progresiva de pasarelas digitales.");
+    }
+    else if (dinero === "billeteras") { 
+        if (ciber < 150) { 
+            alertas.push("Fraudes Masivos por Phishing y Malware: El uso extendido de billeteras sin ciberseguridad derivó en pérdida masiva de depósitos de usuarios por deficiencias de autenticación."); dig += 5.0; 
+        } 
+        else { 
+            dig += 18.0; 
+            logros.push("Ecosistema Dinámico Privado Interoperable: La sinergia entre billeteras virtuales y protección informática incrementó sustancialmente la velocidad de circulación del dinero."); 
+        } 
+    }
+    else if (dinero === "cbdc_piloto") {
+        if (ciber < 200) {
+            alertas.push("Fallas Técnicas en Prueba Piloto CBDC: Inestabilidad en los nodos centrales por ciberseguridad insuficiente."); dig += 4.0;
+        } else {
+            dig += 16.0; pib += 0.6;
+            logros.push("Despliegue Controlado de CBDC: Evaluación exitosa de pruebas de estrés monetario sin arriesgar la estabilidad del sistema bancario.");
+        }
+    }
+    else if (dinero === "cbdc") {
+        if (ciber < 300) { 
+            dig = 0.0; pib -= 2.0; des += 2.0;
+            alertas.push("Colapso Total de la Moneda Digital Soberana: Un ciberataque de denegación de servicio (DDoS) destruyó la infraestructura de la CBDC, congelando depósitos y anulando la adopción fintech."); 
+        } else { 
+            dig += 28.0; pib += 1.2; deuda -= 1.5; 
+            logros.push("Soberanía Monetaria Eficiente (CBDC): La emisión digital de banco central capturó la liquidez informal, redujo los costos impositivos de impresión física y fortaleció el canal de transmisión de pagos."); 
+        }
+    }
+
+    inf = Math.max(0.1, inf); des = Math.max(1.0, des); pib = Math.round(pib * 10) / 10; deuda = Math.max(10, deuda); dig = Math.min(100, Math.max(0, dig));
+
+    // MOSTRAR MÉTRICAS
+    document.getElementById('m-inf').innerText = inf.toFixed(1) + '%';
+    document.getElementById('m-des').innerText = des.toFixed(1) + '%';
+    document.getElementById('m-pib').innerText = pib.toFixed(1) + '%';
+    document.getElementById('m-deuda').innerText = deuda.toFixed(1) + '%';
+    document.getElementById('m-dig').innerText = dig.toFixed(1) + '%';
+
+    setDelta('d-inf', inf - 8.0, true);
+    setDelta('d-des', des - 7.0, true);
+    setDelta('d-pib', pib - 1.5, false);
+    setDelta('d-deuda', deuda - 60.0, true);
+    setDelta('d-dig', dig - 10.0, false);
+
+    // CÁLCULO DE CUMPLIMIENTO DE METAS (0-100 pts cuantitativos)
+    let ptsInf = (inf <= 4.0) ? 20 : (inf <= 6.5) ? 15 : (inf <= 8.5) ? 8 : 0;
+    let ptsDes = (des <= 5.0) ? 20 : (des <= 7.0) ? 15 : (des <= 8.5) ? 8 : 0;
+    let ptsPib = (pib >= 3.0) ? 20 : (pib >= 2.0) ? 15 : (pib >= 0.5) ? 8 : 0;
+    let ptsDeuda = (deuda <= 58.0) ? 20 : (deuda <= 62.0) ? 15 : (deuda <= 66.0) ? 8 : 0;
+    let ptsDig = (dig >= 35.0) ? 20 : (dig >= 20.0) ? 15 : (dig >= 12.0) ? 8 : 0;
+
+    let notaMetas100 = ptsInf + ptsDes + ptsPib + ptsDeuda + ptsDig;
+    document.getElementById('m-metas').innerText = notaMetas100 + ' pts';
+    document.getElementById('d-metas').innerText = notaMetas100 >= 80 ? 'Excelente Meta' : notaMetas100 >= 60 ? 'Meta Aceptable' : 'Meta Deficiente';
+
+    // RESULTADO DEL ESCENARIO MACROECONÓMICO
+    let sBox = document.getElementById('social-impact-container');
+    let sEmoji = document.getElementById('social-emoji');
+    let sStatus = document.getElementById('social-status');
+    let sDesc = document.getElementById('social-desc');
+    let extText = document.getElementById('analysis-extension-text');
+    
+    if (inf >= 12.0) {
+        sBox.className = "social-impact-box status-dead";
+        sEmoji.innerText = "💀";
+        sStatus.innerText = "¡Crisis de Hiperinflación y Desvalorización Monetaria!";
+        sDesc.innerText = "La inyección desmedida de liquidez junto con una laxitud monetaria o fiscal dispararon la inflación al " + inf.toFixed(1) + "%. El dinero físico y los salarios nominales han perdido aceleradamente su poder de compra, erosionando la canasta básica familiar y desincentivando el ahorro interno.";
+        extText.innerHTML = "<b>Consecuencias Estructurales:</b> La espiral de precios generó especulación financiera y distorsiones en los costos de los insumos. Los comercios locales reportan desabasto y los inversionistas exigen primas de riesgo excesivas. La confianza en la moneda fiduciaria local colapsó y la población busca refugio en activos informales o divisas extranjeras.";
+    } 
+    else if ((dinero === "cbdc" || dinero === "cbdc_piloto") && ciber < 300) {
+        sBox.className = "social-impact-box status-dead";
+        sEmoji.innerText = "💀";
+        sStatus.innerText = "¡Colapso Tecnológico del Sistema Financiero Digital!";
+        sDesc.innerText = "El despliegue apresurado de una CBDC soberana sin el respaldo de ciberdefensa requerido (asignaste " + ciber + " Mdd frente a los 300 Mdd mínimos obligatorios) detonó un ataque ransomware masivo sobre los nodos bancarios centrales.";
+        extText.innerHTML = "<b>Impacto Sistémico:</b> El hackeo congeló las carteras digitales de la población, paralizó la liquidación de pagos comerciales y redujo la adopción fintech al " + dig.toFixed(1) + "%. La actividad comercial se detuvo abruptamente, contrayendo el PIB al " + pib.toFixed(1) + "% e incrementando el desempleo al " + des.toFixed(1) + "% por el quiebre de pasarelas de pago.";
+    }
+    else if (pib < 0.0 || des >= 10.0) {
+        sBox.className = "social-impact-box status-angry";
+        sEmoji.innerText = "😡";
+        sStatus.innerText = "Depresión Económica y Paralización del Empleo";
+        sDesc.innerText = "El uso de políticas de choque contractivas o incrementos impositivos punitivos enfriaron en exceso la Demanda Agregada. El crecimiento cayó a terreno recesivo (" + pib.toFixed(1) + "%) y el desempleo escaló críticamente al " + des.toFixed(1) + "%.";
+        extText.innerHTML = "<b>Impacto Social:</b> El incremento del desempleo provocó una caída drástica en el consumo privado (Consumo) y la inversión corporativa (Inversión). Las empresas redujeron sus nóminas y la recaudación fiscal cayó a pesar de las mayores alzas tributarias, elevando el riesgo de impago de la deuda soberana.";
+    }
+    else if (inf <= 6.5 && pib >= 2.5 && dig >= 25.0 && des <= 6.5) {
+        sBox.className = "social-impact-box status-happy";
+        sEmoji.innerText = "🥳";
+        sStatus.innerText = "¡Resultado Exitoso: Crecimiento e Inclusión Digital!";
+        sDesc.innerText = "¡Diseño macroeconómico de alta precisión! Lograste estabilizar la inflación en " + inf.toFixed(1) + "%, dinamizar el PIB Real al " + pib.toFixed(1) + "% y expandir la adopción fintech al " + dig.toFixed(1) + "% con el blindaje informático adecuado.";
+        extText.innerHTML = "<b>Beneficios Integrales:</b> La sinergia entre políticas expansivas moderadas y un presupuesto fuerte en ciberseguridad aceleró la velocidad del dinero y redujo los costos de transacción. Los pequeños comerciantes se integraron formalmente al sistema financiero y las inversiones en infraestructura fortalecieron la productividad general.";
+    }
+    else {
+        sBox.className = "social-impact-box status-neutral";
+        sEmoji.innerText = "😐";
+        sStatus.innerText = "Estancamiento Inercial y Fricción Mercado";
+        sDesc.innerText = "La mezcla de políticas aplicadas fue tímida o contradictoria. La inflación se ubicó en " + inf.toFixed(1) + "% y el PIB avanza a un ritmo modesto del " + pib.toFixed(1) + "%. No hay una crisis desbordada pero tampoco una transformación productiva.";
+        extText.innerHTML = "<b>Análisis de Coyuntura:</b> Las medidas de fomento digital no lograron compensar la desconfianza del usuario o la carga impositiva. La economía informal continúa operando predominantemente con efectivo físico y el crédito productivo permanece estancado por falta de incentivos regulatorios integrales.";
+    }
+
+    let alertasHtml = alertas.map(a => `<li>${a}</li>`).join('');
+    let logrosHtml = logros.map(l => `<li>${l}</li>`).join('');
+    document.getElementById('alertas-lista').innerHTML = alertasHtml || "<li>Estabilidad técnica bajo control operativo.</li>";
+    document.getElementById('logros-lista').innerHTML = logrosHtml || "<li>Sin tracción de crecimiento acelerado.</li>";
+
+    // DESGLOSE Y EVALUACIÓN POR CRITERIOS DE RÚBRICA (100 PTS TOTALES SUMANDO EL CRITERIO DE METAS)
+    let p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 10, p6 = 10;
+    
+    // Ponderación de Metas Macroeconómicas a 10 Puntos de la nota final
+    p4 = Math.round((notaMetas100 / 100) * 10);
+    let g4Class = p4 >= 8 ? "grado-excelente" : p4 >= 6 ? "grado-suficiente" : "grado-insuficiente";
+    let g4Txt = p4 >= 8 ? `Excelente (${p4}/10 pts)` : p4 >= 6 ? `Suficiente (${p4}/10 pts)` : `Insuficiente (${p4}/10 pts)`;
+    let g4Desc = `Obtuvo un logro de metas macroeconómicas del ${notaMetas100}%. Evaluación cuantitativa: Inflación (${inf.toFixed(1)}%), Desempleo (${des.toFixed(1)}%), PIB (${pib.toFixed(1)}%), Deuda (${deuda.toFixed(1)}%) y Adopción (${dig.toFixed(1)}%).`;
+
+    let g1Class = "grado-suficiente", g1Txt = "Suficiente (14/20 pts)", g1Desc = "Interpreta de manera aceptable las cifras del caso, identificando parcialmente los impactos en la población.";
+    let g2Class = "grado-suficiente", g2Txt = "Suficiente (18/25 pts)", g2Desc = "Presenta medidas de política económica pero subsisten fricciones o riesgos no completamente mitigados sobre la Demanda Agregada.";
+    let g3Class = "grado-suficiente", g3Txt = "Suficiente (18/25 pts)", g3Desc = "Propone estrategias de adopción digital pero omite fortalecer la cibernética o equilibrar el marco regulatorio.";
+
+    if (inf <= 6.5 && des <= 6.5) { p1 = 20; g1Class = "grado-excelente"; g1Txt = "Excelente (20/20 pts)"; g1Desc = "Diagnóstico riguroso de las cifras del caso, clasificando adecuadamente los instrumentos y salvaguardando a los sectores vulnerables."; }
+    else if (inf >= 11.0 || des >= 10.0) { p1 = 10; g1Class = "grado-insuficiente"; g1Txt = "Insuficiente (10/20 pts)"; g1Desc = "Omite o desconoce las variables iniciales, confundiendo la dirección de las políticas e incrementando el impacto social negativo."; }
+    else { p1 = 14; }
+
+    if (pib >= 2.5 && inf <= 6.5 && deuda <= 63.0) { p2 = 25; g2Class = "grado-excelente"; g2Txt = "Excelente (25/25 pts)"; g2Desc = "Plan articulado que combate inflación y desempleo, justificando el efecto directo sobre los componentes de la Demanda Agregada y mitigando riesgos."; }
+    else if (pib < 0.0 || inf >= 12.0) { p2 = 10; g2Class = "grado-insuficiente"; g2Txt = "Insuficiente (10/25 pts)"; g2Desc = "Políticas contrapuestas o incoherentes que profundizaron la recesión o la espiral inflacionaria sin evaluar la Demanda Agregada."; }
+    else { p2 = 18; }
+
+    if (ciber >= 300 && (dinero === "cbdc" || dinero === "billeteras" || dinero === "cbdc_piloto") && reg !== "estricto") { p3 = 25; g3Class = "grado-excelente"; g3Txt = "Excelente (25/25 pts)"; g3Desc = "Estrategia digital integral con alta ciberseguridad, ética e inclusión, maximizando la velocidad del dinero fiduciario/virtual."; }
+    else if ((dinero === "cbdc" || dinero === "cbdc_piloto") && ciber < 300) { p3 = 10; g3Class = "grado-insuficiente"; g3Txt = "Insuficiente (10/25 pts)"; g3Desc = "Estrategia desarticulada que expuso la infraestructura soberana a ciberataques y congelamiento de pagos."; }
+    else { p3 = 18; }
+
+    let rubricaHtml = `
+        <tr>
+            <td class="crit-title">1. Diagnóstico Macroeconómico e Impacto Social<br><span class="pts-badge">20 Puntos Máx</span></td>
+            <td>${g1Desc}</td>
+            <td><span class="grado-badge ${g1Class}">${g1Txt}</span></td>
+        </tr>
+        <tr>
+            <td class="crit-title">2. Diseño y Coordinación de Políticas<br><span class="pts-badge">25 Puntos Máx</span></td>
+            <td>${g2Desc}</td>
+            <td><span class="grado-badge ${g2Class}">${g2Txt}</span></td>
+        </tr>
+        <tr>
+            <td class="crit-title">3. Estrategia Fintech y Cultura Digital<br><span class="pts-badge">25 Puntos Máx</span></td>
+            <td>${g3Desc}</td>
+            <td><span class="grado-badge ${g3Class}">${g3Txt}</span></td>
+        </tr>
+        <tr>
+            <td class="crit-title">4. Cumplimiento de Metas Macroeconómicas (5 Indicadores)<br><span class="pts-badge">10 Puntos Máx</span></td>
+            <td>${g4Desc}</td>
+            <td><span class="grado-badge ${g4Class}">${g4Txt}</span></td>
+        </tr>
+        <tr>
+            <td class="crit-title">5. Estructura y Formato del Informe Escrito<br><span class="pts-badge">10 Puntos Máx</span></td>
+            <td>Presencia de las 4 secciones requeridas del informe con redacción técnica y lógica académica.</td>
+            <td><span class="grado-badge grado-excelente">Excelente (10/10 pts)</span></td>
+        </tr>
+        <tr>
+            <td class="crit-title">6. Presentación Oral y Trabajo en Equipo<br><span class="pts-badge">10 Puntos Máx</span></td>
+            <td>Ajuste estricto al tiempo especificado (<= 5 min), sustento técnico y participación equitativa del equipo.</td>
+            <td><span class="grado-badge grado-excelente">Excelente (10/10 pts)</span></td>
+        </tr>
+    `;
+    document.getElementById('rubrica-body').innerHTML = rubricaHtml;
+
+    let totalScore = p1 + p2 + p3 + p4 + p5 + p6; 
+    document.getElementById('final-score-display').innerText = totalScore + " / 100 Pts";
+    
+    let statusText = "";
+    if (totalScore >= 90) statusText = "🏆 Desempeño Sobresaliente (Alineación Completa con los Fines de Aprendizaje)";
+    else if (totalScore >= 70) statusText = "👍 Desempeño Satisfactorio (Requiere Reforzar Coordinación y Ciberseguridad)";
+    else statusText = "⚠️ Desempeño Insuficiente (Requiere Revisión Teórica Macroeconómica y Normativa)";
+    document.getElementById('final-score-status').innerText = statusText;
+
+    // REDACCIÓN DE RETROALIMENTACIÓN FORMATIVA CUSTOM
+    let fbHtml = `
+        <div class="fb-card">
+            <h4>✅ Aciertos en la Toma de Decisiones e Interpretación de Evidencia:</h4>
+            <p>En el marco del <b>Fin de Aprendizaje 1</b>, demostraste destreza al interpretar la evidencia cuantitativa de la crisis de Fintechia. Al configurar la tasa en <b>${mon}</b> y la normativa <b>${reg}</b>, lograste orientar el PIB Real hacia el <b>${pib.toFixed(1)}%</b> y la adopción digital al <b>${dig.toFixed(1)}%</b>, utilizando parámetros pertinentes al contexto socioeconómico.</p>
+        </div>
+        <div class="fb-card">
+            <h4>⚠️ Aspectos a Reforzar sobre Dinero Fiduciario vs. Criptoactivos/CBDC y Ciberdefensa:</h4>
+            <p>Con respecto al <b>Fin de Aprendizaje 2</b>, recuerda que vincular los problemas sociales exige prever las fricciones de los nuevos instrumentos de pago. En tu simulación se registraron <b>${alertas.length} alertas operativas</b>. La efectividad del dinero digital soberano o billeteras privadas depende éticamente del nivel de ciberprotección institucional (asignaste <b>${ciber} Mdd</b>) para evitar pérdidas de patrimonio en sectores vulnerables.</p>
+        </div>
+        <div class="fb-card">
+            <h4>💡 Recomendación Técnica para tu Informe y Presentación Oral:</h4>
+            <p>Fundamenta en tu informe la transmisión de tu paquete fiscal (<b>${gasto}</b> e impuestos <b>${impGen}</b>) sobre los componentes de la Demanda Agregada, justificando cómo las alternativas de pago y financiamiento bajo el marco normativo actual protegen el bienestar social.</p>
+        </div>
+    `;
+    document.getElementById('retroalimentacion-cuerpo').innerHTML = fbHtml;
+}
+
+function setDelta(id, val, invert) {
+    let el = document.getElementById(id);
+    let sign = val > 0 ? '+' : '';
+    el.innerText = sign + val.toFixed(1) + '%';
+    if (Math.abs(val) < 0.05) { el.innerText = '0.0%'; el.className = 'metric-delta delta-neutral'; }
+    else if (val > 0) { el.className = invert ? 'metric-delta delta-up' : 'metric-delta delta-down'; }
+    else { el.className = invert ? 'metric-delta delta-down' : 'metric-delta delta-up'; }
+}
+
+window.onload = function() { evaluarEstado(); };
+</script>
+</body>
+</html>
